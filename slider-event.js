@@ -5,6 +5,8 @@ class SliderEvent extends MyEvent {
         this.distance = 0;
         this.previousIndex = 0;
         this.currentIndex = 0;
+        this.listLength = 17;
+        this.halfListLength = parseInt(this.listLength / 2);
     }
 
     // From this point, 8 === half of the list length. It needs a change!!
@@ -26,11 +28,11 @@ class SliderEvent extends MyEvent {
     }
 
     getPreviousIndex(index) {
-        return index - 1 === 0 ? 17 : index - 1;
+        return index - 1 === 0 ? this.listLength : index - 1;
     }
 
     getNextIndex(index) {
-        return (index + 1) % 17 === 0 ? 17 : (index + 1) % 17;
+        return (index + 1) % this.listLength === 0 ? this.listLength : (index + 1) % this.listLength;
     }
 
     returnCurrentIndex() {
@@ -39,15 +41,19 @@ class SliderEvent extends MyEvent {
         return parseInt(targetId);
     }
 
+    giveSelectedClassToCurrentIndexNode(){
+        const selectedCard = $('.selected-card');
+        selectedCard.classList.remove("selected-card");
+        $(`#card-${this.currentIndex}`).classList.add('selected-card');  
+    }
+
     previousButtonListener(event) {
         const currentIndex = this.returnCurrentIndex();
         this.previousIndex = currentIndex;
         this.currentIndex = this.getPreviousIndex(currentIndex);
         this.distance = -1;
         this.moveByDistance(-1);
-        const selectedCard = $('.selected-card');
-        selectedCard.classList.remove("selected-card");
-        $(`#card-${this.currentIndex}`).classList.add('selected-card');    
+        this.giveSelectedClassToCurrentIndexNode();
     }
 
     nextButtonListener(event) {
@@ -56,31 +62,8 @@ class SliderEvent extends MyEvent {
         this.currentIndex = this.getNextIndex(currentIndex);
         this.distance = 1;
         this.moveByDistance(1);
-        const selectedCard = $('.selected-card');
-        selectedCard.classList.remove("selected-card");
-        $(`#card-${this.currentIndex}`).classList.add('selected-card');        
+        this.giveSelectedClassToCurrentIndexNode();
     }
-
-    initializeStatus() {
-        $$('.header-list').forEach(list => {
-            if (list.classList.contains("header-selected")) {
-                list.classList.remove("header-selected");
-            }
-        })
-
-        $$('.circles').forEach(circle => {
-            if (circle.classList.contains("invisible") === false) {
-                circle.classList.add("invisible");
-            }
-        })
-
-        $$(".dot").forEach(dot => {
-            if (dot.classList.contains("selected-dot")) {
-                dot.classList.remove("selected-dot");
-            }
-        })
-    }
-
 
     transitionEndEvent(event) {
         const cardWrapper = $(".card-wrapper");
@@ -99,6 +82,7 @@ class SliderEvent extends MyEvent {
         }
 
         this.initializeStatus();
+        
         const target = $(`[data-id="${this.currentIndex}"]`);
         target.classList.add("selected-dot");
         target.parentNode.classList.remove("invisible");
@@ -108,21 +92,21 @@ class SliderEvent extends MyEvent {
     }
 
     getDistance (middle, target) {
-        if (middle + 8 > 17) {
+        if (middle + this.halfListLength > this.listLength) {
             // right
-            if (middle <= target && target<= 17) {
+            if (middle <= target && target<= this.listLength) {
                 this.distance = (target - middle);
                 return;
             } 
-            if (1 <= target && target <= middle + 8 - 17) {
-                this.distance = (17 + target - middle);
+            if (1 <= target && target <= middle + this.halfListLength - this.listLength) {
+                this.distance = (this.listLength + target - middle);
                 return;
             }
             this.distance = (middle - target) * -1;
             return;
         }
 
-        if (target <= middle + 8) {
+        if (target <= middle + this.halfListLength) {
             this.distance = target - middle;
             return;
         }
@@ -131,7 +115,7 @@ class SliderEvent extends MyEvent {
             this.distance = (middle - target) * -1;
             return;
         }
-        this.distance = (17 + middle - target) * -1;
+        this.distance = (this.listLength + middle - target) * -1;
         return;
     }
 
@@ -143,9 +127,8 @@ class SliderEvent extends MyEvent {
         this.getDistance(currentIndex, targetIndex);
 
         this.moveByDistance(this.distance);
-        const selectedCard = $('.selected-card');
-        selectedCard.classList.remove("selected-card");
-        $(`#card-${targetIndex}`).classList.add('selected-card');
+        this.giveSelectedClassToCurrentIndexNode();
+
         $(`#card-${targetIndex}`).click();
     }
 
