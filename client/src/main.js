@@ -1,6 +1,7 @@
 import EventManager from "./event/event-manager.js";
 import Slider from "./view/slider.js";
 import { $ } from "./util/util.js";
+import mockData from "./mock-data.js";
 
 
 const addEvents = () => {
@@ -23,6 +24,12 @@ const renderHTML = async () => {
     $("#slider").innerHTML = slider.render();
 }
 
+const forBrowser = () => {
+    const slider = new Slider();
+    slider.setCardData(mockData);
+    $("#slider").innerHTML = slider.render();
+}
+
 const initializeSettings = () => {
     const firstHeader = $(".header-list");
     firstHeader.classList.add("header-selected");
@@ -30,8 +37,8 @@ const initializeSettings = () => {
     firstHeader.querySelector(".dot").classList.add("selected-dot");
 }
 
-const init = async () => {
-    await renderHTML();
+const init = () => {
+    forBrowser();
     addEvents();
     initializeSettings();
 };
