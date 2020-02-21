@@ -1,3 +1,5 @@
+import css from "./header.css";
+
 class Header {
     constructor(headerData) {
         this.headerData = headerData;
@@ -24,3 +26,5 @@ class Header {
         return `<ul class="header-wrapper">${header}</ul>`;
     }
 }
+
+export default Header;

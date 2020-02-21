@@ -1,3 +1,5 @@
+import css from "./button.css";
+
 class Button {
     constructor(buttonData) {
         this.buttonData = buttonData;
@@ -13,3 +15,5 @@ class Button {
         return `${buttons}`;
     }
 }
+
+export default Button;
